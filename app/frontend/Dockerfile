@@ -8,7 +8,7 @@ WORKDIR /app
 COPY app/frontend/package*.json ./
 RUN npm ci
 COPY app/frontend/ ./
-RUN npm run build
+RUN npx vite build
 
 # --- Serve Stage ---
 FROM nginx:alpine
