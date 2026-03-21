@@ -222,10 +222,10 @@ def generate_trading_decision(
                 "human",
                 "Signals:\n{signals}\n\n"
                 "Allowed:\n{allowed}\n\n"
-                "Format:\n"
+                "Return only valid JSON, no markdown, no extra text:\n"
                 "{{\n"
                 '  "decisions": {{\n'
-                '    "TICKER": {{"action":"...","quantity":int,"confidence":int,"reasoning":"..."}}\n'
+                '    "TICKER": {{"action":"hold","quantity":0,"confidence":50,"reasoning":"brief reason"}}\n'
                 "  }}\n"
                 "}}"
             ),

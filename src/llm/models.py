@@ -54,9 +54,11 @@ class LLMModel(BaseModel):
         # Only certain Ollama models support JSON mode
         if self.is_ollama():
             return "llama3" in self.model_name or "neural-chat" in self.model_name
-        # OpenRouter models generally support JSON mode
+        # OpenRouter models: do NOT use response_format=json_object — not all models
+        # (e.g. MiniMax M2.5) support it, causing consistent API errors. Instead
+        # let call_llm use prompt-driven JSON extraction via extract_json_from_response.
         if self.provider == ModelProvider.OPENROUTER:
-            return True
+            return False
         return True
 
     def is_deepseek(self) -> bool:
