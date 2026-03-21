@@ -38,12 +38,8 @@ export function PortfolioManagerNode({
   const isInProgress = status === 'IN_PROGRESS';
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Use persistent state hooks
-  const [availableModels, setAvailableModels] = useNodeState<LanguageModel[]>(
-    id,
-    'availableModels',
-    []
-  );
+  // availableModels is ephemeral API data — use useState so flow restores don't overwrite it
+  const [availableModels, setAvailableModels] = useState<LanguageModel[]>([]);
   const [selectedModel, setSelectedModel] = useNodeState<LanguageModel | null>(
     id,
     'selectedModel',
