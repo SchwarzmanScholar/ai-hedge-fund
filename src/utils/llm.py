@@ -1,6 +1,7 @@
 """Helper functions for LLM"""
 
 import json
+import time
 from pydantic import BaseModel
 from src.llm.models import get_model, get_model_info
 from src.utils.progress import progress
@@ -66,6 +67,8 @@ def call_llm(
                 parsed_result = extract_json_from_response(result.content)
                 if parsed_result:
                     return pydantic_model(**parsed_result)
+                # Parsing failed — treat as a retryable failure
+                raise ValueError(f"Could not extract valid JSON from model response (attempt {attempt + 1})")
             else:
                 return result
 
@@ -75,12 +78,13 @@ def call_llm(
 
             if attempt == max_retries - 1:
                 print(f"Error in LLM call after {max_retries} attempts: {e}")
-                # Use default_factory if provided, otherwise create a basic default
                 if default_factory:
                     return default_factory()
                 return create_default_response(pydantic_model)
 
-    # This should never be reached due to the retry logic above
+            # Exponential backoff before retrying (1s, 2s, 4s, …)
+            time.sleep(2 ** attempt)
+
     return create_default_response(pydantic_model)
 
 
@@ -107,17 +111,59 @@ def create_default_response(model_class: type[BaseModel]) -> BaseModel:
 
 
 def extract_json_from_response(content: str) -> dict | None:
-    """Extracts JSON from markdown-formatted response."""
+    """Extracts a JSON object from a model response.
+
+    Tries, in order:
+    1. Direct parse (model returned raw JSON)
+    2. ```json ... ``` markdown block
+    3. Any ``` ... ``` block that starts with '{'
+    4. First {...} substring found anywhere in the text
+    """
+    if not content:
+        return None
+
+    # 1. Direct parse
     try:
-        json_start = content.find("```json")
-        if json_start != -1:
-            json_text = content[json_start + 7 :]  # Skip past ```json
-            json_end = json_text.find("```")
-            if json_end != -1:
-                json_text = json_text[:json_end].strip()
-                return json.loads(json_text)
-    except Exception as e:
-        print(f"Error extracting JSON from response: {e}")
+        stripped = content.strip()
+        if stripped.startswith("{"):
+            return json.loads(stripped)
+    except json.JSONDecodeError:
+        pass
+
+    # 2. ```json ... ``` block
+    try:
+        idx = content.find("```json")
+        if idx != -1:
+            rest = content[idx + 7:]
+            end = rest.find("```")
+            if end != -1:
+                return json.loads(rest[:end].strip())
+    except (json.JSONDecodeError, Exception):
+        pass
+
+    # 3. Any ``` ... ``` block starting with '{'
+    try:
+        idx = content.find("```")
+        if idx != -1:
+            rest = content[idx + 3:]
+            end = rest.find("```")
+            if end != -1:
+                block = rest[:end].strip()
+                if block.startswith("{"):
+                    return json.loads(block)
+    except (json.JSONDecodeError, Exception):
+        pass
+
+    # 4. First { … } span in the text
+    try:
+        first = content.find("{")
+        last = content.rfind("}")
+        if first != -1 and last > first:
+            return json.loads(content[first : last + 1])
+    except (json.JSONDecodeError, Exception):
+        pass
+
+    print(f"Error extracting JSON from response: could not find valid JSON object")
     return None
 
 
