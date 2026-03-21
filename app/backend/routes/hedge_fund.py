@@ -115,11 +115,23 @@ async def run(request_data: HedgeFundRequest, request: Request, db: Session = De
                         # Just continue the loop
                         pass
 
+                # Drain any remaining progress events before sending the final result
+                while not progress_queue.empty():
+                    try:
+                        event = progress_queue.get_nowait()
+                        yield event.to_sse()
+                    except Exception:
+                        break
+
                 # Get the final result
                 try:
                     result = await run_task
                 except asyncio.CancelledError:
                     print("Task was cancelled")
+                    return
+                except Exception as e:
+                    print(f"Hedge fund run failed: {e}")
+                    yield ErrorEvent(message=f"Execution error: {str(e)}").to_sse()
                     return
 
                 if not result or not result.get("messages"):

@@ -127,13 +127,14 @@ export const api = {
       
       const decoder = new TextDecoder();
       let buffer = '';
-      
+      let receivedComplete = false;
+
       // Function to process the stream
       const processStream = async () => {
         try {
           while (true) {
             const { done, value } = await reader.read();
-            
+
             if (done) {
               break;
             }
@@ -192,6 +193,7 @@ export const api = {
                       }
                       break;
                     case 'complete':
+                      receivedComplete = true;
                       // Store the complete event data in the node context
                       if (eventData.data) {
                         nodeContext.setOutputNodeData(flowId, eventData.data as OutputNodeData);
@@ -245,15 +247,24 @@ export const api = {
             }
           }
           
-          // After the stream has finished, check if we are still in a connected state.
-          // This can happen if the backend closes the connection without sending a 'complete' event.
+          // After the stream has finished, handle based on whether we got a complete event
           if (flowId) {
             const currentConnection = flowConnectionManager.getConnection(flowId);
             if (currentConnection.state === 'connected') {
-              flowConnectionManager.setConnection(flowId, {
-                state: 'completed',
-                abortController: null,
-              });
+              if (!receivedComplete) {
+                // Stream ended without a complete event — mark all nodes as error
+                nodeContext.updateAgentNodes(flowId, getAgentIds(), 'ERROR');
+                flowConnectionManager.setConnection(flowId, {
+                  state: 'error',
+                  error: 'Run ended without a completion signal',
+                  abortController: null,
+                });
+              } else {
+                flowConnectionManager.setConnection(flowId, {
+                  state: 'completed',
+                  abortController: null,
+                });
+              }
             }
           }
         } catch (error: any) { // Type assertion for error

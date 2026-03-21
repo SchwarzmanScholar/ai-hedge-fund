@@ -46,20 +46,24 @@ export function useEnhancedFlowActions() {
       try {
         // Use the basic save function
         const savedFlow = await saveCurrentFlow(name, description);
-        
+
         if (savedFlow) {
-          // After basic save, update with node context data
-          const updatedFlow = await flowService.updateFlow(savedFlow.id, {
-            ...savedFlow,
-            data: {
-              ...savedFlow.data,
-              nodeContextData, // Add runtime data from node context
-            }
-          });
-          
-          return updatedFlow;
+          try {
+            // After basic save, update with node context data only
+            const updatedFlow = await flowService.updateFlow(savedFlow.id, {
+              data: {
+                ...savedFlow.data,
+                nodeContextData,
+              }
+            });
+            return updatedFlow;
+          } catch (contextErr) {
+            // Runtime context data failed to persist, but the flow structure was saved
+            console.warn('[Save] Could not persist runtime context data; flow was saved successfully.', contextErr);
+            return savedFlow;
+          }
         }
-        
+
         return savedFlow;
       } finally {
         // Restore original nodes (without internal_state in React Flow)
