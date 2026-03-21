@@ -45,6 +45,11 @@
     "provider": "Google"
   },
   {
+    "display_name": "MiniMax M2.5",
+    "model_name": "minimax/minimax-m2.5",
+    "provider": "OpenRouter"
+  },
+  {
     "display_name": "GLM-4.5 Air",
     "model_name": "z-ai/glm-4.5-air",
     "provider": "OpenRouter"
