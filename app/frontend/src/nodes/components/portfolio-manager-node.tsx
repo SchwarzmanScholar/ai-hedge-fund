@@ -67,7 +67,7 @@ export function PortfolioManagerNode({
     };
 
     loadModels();
-  }, [setAvailableModels, selectedModel, setSelectedModel]);
+  }, [currentFlowId, selectedModel]); // re-run on flow change and when selectedModel is restored
 
   // Update the node context when the model changes
   useEffect(() => {

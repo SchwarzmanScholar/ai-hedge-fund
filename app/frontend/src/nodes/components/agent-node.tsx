@@ -41,7 +41,7 @@ export function AgentNode({
   const [availableModels, setAvailableModels] = useState<LanguageModel[]>([]);
   const [selectedModel, setSelectedModel] = useNodeState<LanguageModel | null>(id, 'selectedModel', null);
 
-  // Load models on mount
+  // Load models on mount and whenever the flow changes (retries if initial load failed)
   useEffect(() => {
     const loadModels = async () => {
       try {
@@ -52,9 +52,9 @@ export function AgentNode({
         // Keep empty array as fallback
       }
     };
-    
+
     loadModels();
-  }, [setAvailableModels]);
+  }, [currentFlowId]); // re-run on flow change so a failed initial load gets retried
 
   // Update the node context when the model changes
   useEffect(() => {
