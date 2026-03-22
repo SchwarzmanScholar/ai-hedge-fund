@@ -1,7 +1,38 @@
 {
   "permissions": {
     "allow": [
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "WebSearch",
+      "Bash(poetry add:*)",
+      "Bash(python -m poetry add yfinance finnhub-python)",
+      "Bash(where python:*)",
+      "Bash(where pip:*)",
+      "Bash(where py:*)",
+      "Read(//c/Users/74437/AppData/Roaming/**)",
+      "Read(//c/Users/74437/AppData/Local/Programs/**)",
+      "Bash(\"/c/Users/74437/AppData/Roaming/pypoetry/venv/Scripts/poetry.exe\" --version)",
+      "Bash(\"/c/Users/74437/AppData/Local/pypoetry/venv/Scripts/poetry.exe\" --version)",
+      "Bash(cmd.exe /c \"where poetry\")",
+      "Bash(cmd.exe /c \"poetry --version\")",
+      "Bash(cmd.exe /c \"echo %PATH%\")",
+      "Bash(tr ';' '\\\\n')",
+      "Bash(cmd.exe /c \"pip install yfinance finnhub-python\")",
+      "Bash(cmd.exe /c \"python -m pip install yfinance finnhub-python 2>&1\")",
+      "Bash(powershell.exe -Command \"python -m pip install yfinance finnhub-python\")",
+      "Bash(powershell.exe -Command \"cd ''c:\\\\Users\\\\74437\\\\OneDrive - Bain\\\\Documents\\\\Others\\\\Coding\\\\ai-hedge-fund''; python -c ''from src.tools.api import get_prices, get_financial_metrics, search_line_items, get_insider_trades, get_company_news, get_market_cap, prices_to_df, get_price_data; print\\(\"\"All imports OK\"\"\\)''\")",
+      "Bash(powershell.exe -Command \"cd ''c:\\\\Users\\\\74437\\\\OneDrive - Bain\\\\Documents\\\\Others\\\\Coding\\\\ai-hedge-fund''; python -c \"\"import sys; sys.path.insert\\(0,''.''\\);from src.tools.api import get_prices, get_financial_metrics, search_line_items; print\\(''OK''\\)\"\"\")",
+      "Bash(powershell.exe -Command \"cd ''c:\\\\Users\\\\74437\\\\OneDrive - Bain\\\\Documents\\\\Others\\\\Coding\\\\ai-hedge-fund''; python -c \"\"import sys; sys.path.insert\\(0,''.''\\);from src.tools.api import get_prices; prices=get_prices\\(''AAPL'',''2024-01-02'',''2024-01-05''\\); print\\(''Prices:'',len\\(prices\\),''rows''\\); print\\(prices[0]\\)\"\"\")",
+      "Bash(powershell.exe -Command \"python -c \"\"import ssl; print\\(ssl.get_default_verify_paths\\(\\)\\)\"\"\")",
+      "Bash(powershell.exe -Command \"python -c \"\"import certifi; print\\(certifi.where\\(\\)\\)\"\"\")",
+      "Bash(powershell.exe -Command \"python -c \"\"import ssl, requests; s=requests.Session\\(\\); s.verify=False; import urllib3; urllib3.disable_warnings\\(\\); import yfinance as yf; yf.download\\(''AAPL'',''2024-01-02'',''2024-01-05'',session=s,progress=False\\)\"\"\")",
+      "Bash(powershell.exe -Command \"python -c \"\"from curl_cffi import requests as cr; r=cr.get\\(''https://finance.yahoo.com'',verify=False\\); print\\(r.status_code\\)\"\"\")",
+      "Bash(powershell.exe -Command \"python -c \"\"from curl_cffi import requests as cr; s=cr.Session\\(verify=False,impersonate=''chrome''\\); import yfinance as yf; df=yf.download\\(''AAPL'',''2024-01-02'',''2024-01-05'',session=s,progress=False,multi_level_index=False\\); print\\(df\\)\"\"\")",
+      "Bash(powershell.exe -Command \"python -c \"\"import finnhub, inspect; c=finnhub.Client\\(''test''\\); print\\([a for a in dir\\(c\\) if not a.startswith\\(''__''\\)]\\)\"\"\")",
+      "Bash(powershell.exe -Command \":*)",
+      "Bash(find /c/Users/74437 -name activate -path */Scripts/activate)",
+      "Bash(powershell.exe -Command \"pip show langchain-core 2>&1 | head -5\")",
+      "Bash(powershell.exe -Command \"python -m pip show langchain-core 2>&1 | Select-String ''Name|Location|Version''\")",
+      "Bash(powershell.exe -Command \"python -m pip show langchain-core\")"
     ]
   }
 }
