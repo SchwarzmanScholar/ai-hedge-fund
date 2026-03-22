@@ -1,12 +1,7 @@
 import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
 
 const STORAGE_KEY = 'auth_token';
-
-function getApiBaseUrl(): string {
-  const envUrl = import.meta.env.VITE_API_URL;
-  if (envUrl) return envUrl;
-  return `${window.location.protocol}//${window.location.hostname}:8000`;
-}
+const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -22,7 +17,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const login = useCallback(async (username: string, password: string) => {
-    const response = await fetch(`${getApiBaseUrl()}/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
