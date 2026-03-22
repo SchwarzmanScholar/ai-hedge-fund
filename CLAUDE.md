@@ -115,3 +115,19 @@ Supported via `ModelProvider` enum in [src/llm/models.py](src/llm/models.py): Op
 
 1. Create agent function in `src/agents/` following the pattern of existing agents
 2. Register it in `ANALYST_CONFIG` in [src/utils/analysts.py](src/utils/analysts.py)
+
+## Deployment
+
+## Deployment
+
+- Deployed via Dokploy
+- Dokploy dashboard: http://187.77.66.206:3000
+- App URL: http://187.77.66.206:5173/
+- Environment variables: Dokploy dashboard → project → service → Environment tab
+- To redeploy: Dokploy dashboard → project → service → click Redeploy
+- To check logs: Dokploy dashboard → project → service → Logs tab
+
+## How to verify a change worked
+
+- App runs at: http://187.77.66.206:5173/
+- If something breaks, check logs at: http://187.77.66.206:3000 → project → compose service → Logs tab
