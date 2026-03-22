@@ -32,7 +32,9 @@
       "Bash(find /c/Users/74437 -name activate -path */Scripts/activate)",
       "Bash(powershell.exe -Command \"pip show langchain-core 2>&1 | head -5\")",
       "Bash(powershell.exe -Command \"python -m pip show langchain-core 2>&1 | Select-String ''Name|Location|Version''\")",
-      "Bash(powershell.exe -Command \"python -m pip show langchain-core\")"
+      "Bash(powershell.exe -Command \"python -m pip show langchain-core\")",
+      "WebFetch(domain:pypi.org)",
+      "Bash(cmd.exe /c \"cd \"\"c:\\\\Users\\\\74437\\\\OneDrive - Bain\\\\Documents\\\\Others\\\\Coding\\\\ai-hedge-fund\"\" && poetry lock --no-update\")"
     ]
   }
 }
