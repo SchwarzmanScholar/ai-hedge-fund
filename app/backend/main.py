@@ -18,14 +18,14 @@ app = FastAPI(title="AI Hedge Fund API", description="Backend API for AI Hedge F
 # Initialize database tables (this is safe to run multiple times)
 Base.metadata.create_all(bind=engine)
 
-# Configure CORS — set CORS_ORIGINS env var to a comma-separated list of allowed origins
-_cors_raw = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
+# Configure CORS — set CORS_ORIGINS env var to a comma-separated list of allowed origins, or "*" for all
+_cors_raw = os.getenv("CORS_ORIGINS", "*")
 origins = [o.strip() for o in _cors_raw.split(",")]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
