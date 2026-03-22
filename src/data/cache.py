@@ -34,8 +34,8 @@ class Cache:
         return self._financial_metrics_cache.get(ticker)
 
     def set_financial_metrics(self, ticker: str, data: list[dict[str, any]]):
-        """Append new financial metrics to cache."""
-        self._financial_metrics_cache[ticker] = self._merge_data(self._financial_metrics_cache.get(ticker), data, key_field="report_period")
+        """Store financial metrics in cache, replacing any existing data for this key."""
+        self._financial_metrics_cache[ticker] = data
 
     def get_line_items(self, ticker: str) -> list[dict[str, any]] | None:
         """Get cached line items if available."""

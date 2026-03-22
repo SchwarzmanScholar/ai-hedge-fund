@@ -8,7 +8,13 @@ import json
 
 
 def merge_dicts(a: dict[str, any], b: dict[str, any]) -> dict[str, any]:
-    return {**a, **b}
+    result = dict(a)
+    for key, val in b.items():
+        if key in result and isinstance(result[key], dict) and isinstance(val, dict):
+            result[key] = merge_dicts(result[key], val)
+        else:
+            result[key] = val
+    return result
 
 
 # Define agent state
