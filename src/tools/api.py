@@ -611,6 +611,145 @@ def get_company_news(
 # Market Cap
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# ETF / Mutual Fund Data (Finnhub + Tiingo + yfinance)
+# ---------------------------------------------------------------------------
+
+def detect_fund_type(symbol: str) -> str:
+    """Return 'ETF', 'MUTUALFUND', or 'EQUITY' based on yfinance quoteType."""
+    cache_key = f"fund_type_{symbol}"
+    if cached := _cache.get_fund_data(cache_key):
+        return cached.get("type", "EQUITY")
+    try:
+        info = yf.Ticker(symbol, session=_get_yf_session()).info or {}
+        fund_type = (info.get("quoteType") or "EQUITY").upper()
+        if fund_type not in ("ETF", "MUTUALFUND"):
+            fund_type = "EQUITY"
+    except Exception:
+        fund_type = "EQUITY"
+    _cache.set_fund_data(cache_key, {"type": fund_type})
+    return fund_type
+
+
+def get_etf_profile(symbol: str) -> dict:
+    """Fetch ETF profile via Finnhub (etfs_profile)."""
+    cache_key = f"etf_profile_{symbol}"
+    if cached := _cache.get_fund_data(cache_key):
+        return cached
+    try:
+        result = _get_finnhub_client().etfs_profile(symbol=symbol)
+        data = result if isinstance(result, dict) else {}
+    except Exception as e:
+        logger.warning("Finnhub ETF profile failed for %s: %s", symbol, e)
+        return {}
+    if data:
+        _cache.set_fund_data(cache_key, data)
+    return data
+
+
+def get_etf_holdings(symbol: str) -> dict:
+    """Fetch ETF holdings via Finnhub (etfs_holdings)."""
+    cache_key = f"etf_holdings_{symbol}"
+    if cached := _cache.get_fund_data(cache_key):
+        return cached
+    try:
+        result = _get_finnhub_client().etfs_holdings(symbol=symbol)
+        data = result if isinstance(result, dict) else {}
+    except Exception as e:
+        logger.warning("Finnhub ETF holdings failed for %s: %s", symbol, e)
+        return {}
+    if data:
+        _cache.set_fund_data(cache_key, data)
+    return data
+
+
+def get_etf_sector(symbol: str) -> dict:
+    """Fetch ETF sector exposures via Finnhub (etfs_sector_exp)."""
+    cache_key = f"etf_sector_{symbol}"
+    if cached := _cache.get_fund_data(cache_key):
+        return cached
+    try:
+        result = _get_finnhub_client().etfs_sector_exp(symbol=symbol)
+        data = result if isinstance(result, dict) else {}
+    except Exception as e:
+        logger.warning("Finnhub ETF sector failed for %s: %s", symbol, e)
+        return {}
+    if data:
+        _cache.set_fund_data(cache_key, data)
+    return data
+
+
+def get_etf_country(symbol: str) -> dict:
+    """Fetch ETF country exposures via Finnhub (etfs_country_exp)."""
+    cache_key = f"etf_country_{symbol}"
+    if cached := _cache.get_fund_data(cache_key):
+        return cached
+    try:
+        result = _get_finnhub_client().etfs_country_exp(symbol=symbol)
+        data = result if isinstance(result, dict) else {}
+    except Exception as e:
+        logger.warning("Finnhub ETF country failed for %s: %s", symbol, e)
+        return {}
+    if data:
+        _cache.set_fund_data(cache_key, data)
+    return data
+
+
+def get_mutual_fund_profile(symbol: str) -> dict:
+    """Fetch mutual fund profile via Finnhub (mutual_fund_profile)."""
+    cache_key = f"mf_profile_{symbol}"
+    if cached := _cache.get_fund_data(cache_key):
+        return cached
+    try:
+        result = _get_finnhub_client().mutual_fund_profile(symbol=symbol)
+        data = result if isinstance(result, dict) else {}
+    except Exception as e:
+        logger.warning("Finnhub mutual fund profile failed for %s: %s", symbol, e)
+        return {}
+    if data:
+        _cache.set_fund_data(cache_key, data)
+    return data
+
+
+def get_mutual_fund_holdings(symbol: str) -> dict:
+    """Fetch mutual fund holdings via Finnhub (mutual_fund_holdings)."""
+    cache_key = f"mf_holdings_{symbol}"
+    if cached := _cache.get_fund_data(cache_key):
+        return cached
+    try:
+        result = _get_finnhub_client().mutual_fund_holdings(symbol=symbol)
+        data = result if isinstance(result, dict) else {}
+    except Exception as e:
+        logger.warning("Finnhub mutual fund holdings failed for %s: %s", symbol, e)
+        return {}
+    if data:
+        _cache.set_fund_data(cache_key, data)
+    return data
+
+
+def get_fund_price_history(symbol: str) -> list:
+    """Fetch 1-year daily price history from Tiingo. Returns [] if TIINGO_API_KEY is not set."""
+    tiingo_key = os.environ.get("TIINGO_API_KEY", "")
+    if not tiingo_key:
+        return []
+    cache_key = f"fund_price_history_{symbol}"
+    if cached := _cache.get_fund_data(cache_key):
+        return cached
+    start_date = (datetime.datetime.now() - datetime.timedelta(days=365)).strftime("%Y-%m-%d")
+    url = f"https://api.tiingo.com/tiingo/daily/{symbol}/prices"
+    try:
+        resp = _get_yf_session().get(url, params={"startDate": start_date, "token": tiingo_key})
+        data = resp.json() if resp.status_code == 200 else []
+        if not isinstance(data, list):
+            data = []
+    except Exception as e:
+        logger.warning("Tiingo price history failed for %s: %s", symbol, e)
+        return []
+    if data:
+        _cache.set_fund_data(cache_key, data)
+    return data
+
+
 def get_market_cap(
     ticker: str,
     end_date: str,

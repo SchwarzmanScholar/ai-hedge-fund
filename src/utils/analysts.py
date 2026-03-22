@@ -19,6 +19,7 @@ from src.agents.rakesh_jhunjhunwala import rakesh_jhunjhunwala_agent
 from src.agents.mohnish_pabrai import mohnish_pabrai_agent
 from src.agents.news_sentiment import news_sentiment_agent
 from src.agents.growth_agent import growth_analyst_agent
+from src.agents.ray_dalio_fund import ray_dalio_fund_agent
 
 # Define analyst configuration - single source of truth
 ANALYST_CONFIG = {
@@ -165,6 +166,14 @@ ANALYST_CONFIG = {
         "agent_func": valuation_analyst_agent,
         "type": "analyst",
         "order": 16,
+    },
+    "ray_dalio_fund": {
+        "display_name": "Ray Dalio Fund",
+        "description": "All Weather Fund Analyst",
+        "investing_style": "Applies All Weather risk parity principles to fund selection. Seeks diversified, low-cost funds balanced across geographies, sectors, and asset classes.",
+        "agent_func": ray_dalio_fund_agent,
+        "type": "analyst",
+        "order": 17,
     },
 }
 

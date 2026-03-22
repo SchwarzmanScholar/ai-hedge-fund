@@ -7,6 +7,7 @@ class Cache:
         self._line_items_cache: dict[str, list[dict[str, any]]] = {}
         self._insider_trades_cache: dict[str, list[dict[str, any]]] = {}
         self._company_news_cache: dict[str, list[dict[str, any]]] = {}
+        self._fund_data_cache: dict[str, any] = {}
 
     def _merge_data(self, existing: list[dict] | None, new_data: list[dict], key_field: str) -> list[dict]:
         """Merge existing and new data, avoiding duplicates based on a key field."""
@@ -60,6 +61,14 @@ class Cache:
     def set_company_news(self, ticker: str, data: list[dict[str, any]]):
         """Append new company news to cache."""
         self._company_news_cache[ticker] = self._merge_data(self._company_news_cache.get(ticker), data, key_field="date")
+
+    def get_fund_data(self, key: str) -> any:
+        """Get cached fund/ETF data if available."""
+        return self._fund_data_cache.get(key)
+
+    def set_fund_data(self, key: str, data: any):
+        """Store fund/ETF data in cache."""
+        self._fund_data_cache[key] = data
 
 
 # Global cache instance
